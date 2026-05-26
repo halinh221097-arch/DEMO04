@@ -4,7 +4,7 @@ import sys
 import urllib.error
 import urllib.request
 
-url = "https://data.kcg.gov.tw/File/DirectDownload/80bbbbd3-9ee4-4244-98e9-b4c08deda91b"
+url = "https://data.ntpc.gov.tw/api/datasets/781b822e-214a-4b9a-b4db-32c9f4626d98/csv/file"
 
 # 強制使用 UTF-8 輸出，避免 PowerShell 顯示中文欄位時變成空白或亂碼
 try:
@@ -12,28 +12,26 @@ try:
 except AttributeError:
     pass
 
-COLUMN_LABELS = {
-    "Id": "編號",
-    "Status": "狀態",
-    "Name": "活動名稱",
-    "Description": "說明",
-    "Particpation": "參加對象",
-    "Location": "地點",
-    "Add": "地址",
-    "Tel": "電話",
-    "Org": "主辦單位",
-    "Start": "開始時間",
-    "End": "結束時間",
-    "Cycle": "週期",
-    "Noncycle": "非週期",
-    "Map": "地圖",
-    "Px": "經度",
-    "Py": "緯度",
-    "Travellinginfo": "交通資訊",
-    "Parkinginfo": "停車資訊",
-    "Charge": "費用",
-    "Remarks": "備註",
-    "Changetime": "更新時間",
+FIELD_ORDER = [
+    "author",
+    "type",
+    "startdate",
+    "enddate",
+    "title",
+    "link",
+    "description",
+    "pubdate",
+]
+
+FIELD_LABELS = {
+    "author": "Author（發布單位）",
+    "type": "Type（活動屬性）",
+    "startdate": "Startdate（公告起日）",
+    "enddate": "Enddate（公告迄日）",
+    "title": "Title（活動名稱）",
+    "link": "Link（連結網址）",
+    "description": "Description（活動內容）",
+    "pubdate": "Pubdate（公布日期）",
 }
 
 
@@ -63,11 +61,12 @@ def print_records(text):
     lines = text.splitlines()
     reader = csv.DictReader(lines)
     for row_index, row in enumerate(reader, start=1):
-        if row_index > 1:
-            print()
-        for key, value in row.items():
-            label = COLUMN_LABELS.get(key, key)
+        print(f"第{row_index}筆資料:")
+        for key in FIELD_ORDER:
+            value = row.get(key, "")
+            label = FIELD_LABELS.get(key, key)
             print(f"{label}:{value}")
+        print()
 
 
 try:
